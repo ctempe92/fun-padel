@@ -1,0 +1,17 @@
+{
+  "name": "Fun Padel",
+  "short_name": "Fun Padel",
+  "description": "Planning, scores en direct, classement, photos et vote du tournoi.",
+  "lang": "fr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#123f80",
+  "theme_color": "#1b5cb5",
+  "icons": [
+    { "src": "icone-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icone-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icone-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
