@@ -850,7 +850,7 @@ function tablePlanning() {
 function secClassement() {
   const R = ed.cfg.classement;
   const modes = [
-    ["bonus", "Points + bonus victoire", "Points marqués + un bonus par victoire."],
+    ["bonus", "Points + bonus victoire", "Points marqués + un bonus par victoire (fixe, égal à l'écart, ou les deux)."],
     ["victoires", "Victoires d'abord", "Nombre de victoires, puis départages."],
     ["bareme", "Barème championnat", "Points fixes : victoire, nul, défaite serrée…"],
     ["points", "Points marqués", "Total des points de l'équipe (ancien calcul)."]];
@@ -860,7 +860,12 @@ function secClassement() {
     <p class="lead">Le classement individuel se met à jour en direct sur le site. Vous pouvez changer de règle à tout moment, même pendant le tournoi.</p>
     <div class="modes" role="radiogroup" aria-label="Mode de classement">${modes.map(([k, t, d]) => `<label class="mode${R.mode === k ? " on" : ""}"><input type="radio" name="mode" value="${k}" data-f="mode"${R.mode === k ? " checked" : ""}><b>${t}</b><span>${d}</span></label>`).join("")}</div>
     <div class="grid3" style="margin-top:12px">
-      ${R.mode === "bonus" ? `<div class="field"><label for="f-bonus">Bonus par victoire</label><input id="f-bonus" type="number" inputmode="numeric" min="0" max="100" data-f="cl.bonus" data-t="num" value="${R.bonus}"><p class="help">Un match nul rapporte la moitié.</p></div>` : ""}
+      ${R.mode === "bonus" ? `
+        <div class="field"><label for="f-btype">Type de bonus</label><select id="f-btype" data-f="cl.bonus_type">
+          ${Object.entries(CL.TYPES_BONUS).map(([k, l]) => opt(k, l, R.bonus_type)).join("")}</select>
+          <p class="help">${R.bonus_type === "fixe" ? "Même bonus pour toute victoire." : R.bonus_type === "ecart" ? "Le gagnant reçoit en plus l'écart du match (25-20 : +5)." : "Bonus fixe + l'écart du match."}</p></div>
+        ${R.bonus_type !== "ecart" ? `<div class="field"><label for="f-bonus">Bonus fixe par victoire</label><input id="f-bonus" type="number" inputmode="numeric" min="0" max="100" data-f="cl.bonus" data-t="num" value="${R.bonus}"><p class="help">Un match nul rapporte la moitié.</p></div>` : ""}
+        ${R.bonus_type !== "fixe" ? `<div class="field"><label for="f-plaf">Plafond de l'écart</label><input id="f-plaf" type="number" inputmode="numeric" min="0" max="99" data-f="cl.plafond" data-t="num" value="${R.plafond}"><p class="help">Écart maximum compté dans le bonus. 0 = pas de plafond.</p></div>` : ""}` : ""}
       ${R.mode === "bareme" ? `
         <div class="field"><label for="f-bv">Victoire</label><input id="f-bv" type="number" inputmode="numeric" min="0" max="20" data-f="cl.victoire" data-t="num" value="${R.victoire}"></div>
         <div class="field"><label for="f-bn">Nul</label><input id="f-bn" type="number" inputmode="numeric" min="0" max="20" data-f="cl.nul" data-t="num" value="${R.nul}"></div>
@@ -983,7 +988,7 @@ function setField(el) {
     c.joueurs = list;
   }
   else if (f === "mode") { c.classement.mode = v; redraw = true; }
-  else if (f.startsWith("cl.")) c.classement[f.slice(3)] = v;
+  else if (f.startsWith("cl.")) { c.classement[f.slice(3)] = v; if (f === "cl.bonus_type") redraw = true; }
   else if (/^dep\d$/.test(f)) { const d = [0, 1, 2].map(i => i === Number(f[3]) ? v : (c.classement.departages[i] || "")); c.classement.departages = d.filter(Boolean).filter((x, i, a) => a.indexOf(x) === i); redraw = true; }
   else if (f === "v.actif") { c.vote.actif = v; redraw = true; }
   else if (f.startsWith("v.")) c.vote[f.slice(2)] = v;
