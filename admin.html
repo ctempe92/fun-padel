@@ -368,6 +368,21 @@ body{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
 .field > label,.field > .lbl{font-size:13px;color:var(--muted);font-weight:700}
 .field input,.field select,.field textarea{width:100%;border:1.5px solid var(--hair);background:var(--surface);border-radius:12px;padding:11px 12px;font:inherit;font-size:16px;color:var(--ink);min-width:0}
 .field textarea{resize:vertical;line-height:1.45}
+/* Alignement : toutes les cases ont la même hauteur et restent en haut de leur colonne, quel que soit le navigateur */
+.field{align-content:start;grid-template-rows:auto auto}
+.grid2,.grid3,.cat .grid{align-items:start}
+.field > label,.field > .lbl{min-height:18px;line-height:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.field input:not([type=checkbox]):not([type=radio]),.field select{height:46px;line-height:20px;-webkit-appearance:none;appearance:none;margin:0;display:block}
+.field select{padding-right:38px;background:var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%235a6a81' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 14px center/12px 8px}
+.field input[type=number]{-moz-appearance:textfield}
+.field input[type=number]::-webkit-inner-spin-button,.field input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.field input[type=date],.field input[type=time]{min-width:0;text-align:left}
+.field input::-webkit-date-and-time-value{text-align:left;margin:0}
+.field input::-webkit-datetime-edit{padding:0}
+.field .help{line-height:1.35}
+.row > .field input{flex:1}
+.savebar select{height:44px;-webkit-appearance:none;appearance:none;padding:0 34px 0 12px;background:var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%235a6a81' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 12px center/12px 8px}
+.field .row .btn.small{height:46px;flex:none}
 .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--court);outline:none}
 .field .help{font-size:12.5px;color:var(--muted);margin:0}
 .field.bad input,.field.bad textarea{border-color:var(--live)}
@@ -416,7 +431,8 @@ a.btn{text-decoration:none}
 .modes{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px}
 .mode{display:grid;gap:3px;border:1.5px solid var(--hair);border-radius:14px;padding:12px;cursor:pointer;background:var(--surface)}
 .mode input{position:absolute;opacity:0;pointer-events:none}
-.mode b{font-size:15px}
+.mode{align-content:start}
+.mode b{font-size:15px;line-height:20px;min-height:40px;display:flex;align-items:flex-start}
 .mode span{font-size:12.5px;color:var(--muted)}
 .mode.on{border-color:var(--court);background:color-mix(in srgb,var(--court) 7%,var(--surface))}
 .mode.on b{color:var(--court)}
@@ -829,7 +845,7 @@ function secJoueurs() {
     <p class="lead">Partenaires tournants : à chaque tour, on change de partenaire et d'adversaires. Le générateur évite de rejouer avec le même partenaire et équilibre le nombre de matchs.</p>
     <div class="grid3">
       <div class="field"><label for="f-tours">Nombre de tours</label><input id="f-tours" type="number" inputmode="numeric" min="1" max="99" data-f="tours" data-t="num" value="${c.tours}" ${verrou() ? "disabled" : ""}></div>
-      <div class="field"><label for="f-cible">Ou : matchs par joueur visés</label><div class="row" style="flex-wrap:nowrap"><input id="f-cible" type="number" inputmode="numeric" min="1" max="30" value="${n && k ? Math.max(1, ap.bas) : 5}" ${verrou() ? "disabled" : ""}><button class="btn ghost small" type="button" data-act="suggest" ${verrou() ? "disabled" : ""}>Calculer</button></div></div>
+      <div class="field"><label for="f-cible">Ou : matchs par joueur</label><div class="row" style="flex-wrap:nowrap"><input id="f-cible" type="number" inputmode="numeric" min="1" max="30" value="${n && k ? Math.max(1, ap.bas) : 5}" ${verrou() ? "disabled" : ""}><button class="btn ghost small" type="button" data-act="suggest" ${verrou() ? "disabled" : ""}>Calculer</button></div></div>
     </div>
     <p class="info" id="ap-info" style="margin:12px 0"></p>
     <button class="btn primary" type="button" data-act="gen" ${verrou() || n < 4 ? "disabled" : ""}>${c.matchs && c.matchs.length ? "Régénérer le planning" : "Générer le planning"}</button>
@@ -870,7 +886,7 @@ function secClassement() {
         <div class="field"><label for="f-bv">Victoire</label><input id="f-bv" type="number" inputmode="numeric" min="0" max="20" data-f="cl.victoire" data-t="num" value="${R.victoire}"></div>
         <div class="field"><label for="f-bn">Nul</label><input id="f-bn" type="number" inputmode="numeric" min="0" max="20" data-f="cl.nul" data-t="num" value="${R.nul}"></div>
         <div class="field"><label for="f-bds">Défaite serrée</label><input id="f-bds" type="number" inputmode="numeric" min="0" max="20" data-f="cl.defaite_serree" data-t="num" value="${R.defaite_serree}"></div>
-        <div class="field"><label for="f-bes">Écart maximum « serré »</label><input id="f-bes" type="number" inputmode="numeric" min="0" max="50" data-f="cl.ecart_serre" data-t="num" value="${R.ecart_serre}"></div>
+        <div class="field"><label for="f-bes">Écart « serré » max.</label><input id="f-bes" type="number" inputmode="numeric" min="0" max="50" data-f="cl.ecart_serre" data-t="num" value="${R.ecart_serre}"></div>
         <div class="field"><label for="f-bd">Autre défaite</label><input id="f-bd" type="number" inputmode="numeric" min="0" max="20" data-f="cl.defaite" data-t="num" value="${R.defaite}"></div>` : ""}
       <div class="field"><label for="f-moy">Moyenne par match</label><select id="f-moy" data-f="cl.moyenne">
         ${opt("auto", "Automatique", R.moyenne)}${opt("oui", "Toujours", R.moyenne)}${opt("non", "Jamais (total)", R.moyenne)}</select>
@@ -887,8 +903,8 @@ function secVote() {
     <label class="check"><input type="checkbox" data-f="v.actif" data-t="bool"${v.actif ? " checked" : ""}><span>Activer le vote<small>Un onglet « Vote » apparaît sur le site : un bulletin par participant, anonyme.</small></span></label>
     ${v.actif ? `<div class="grid3" style="margin-top:12px">
       <div class="field"><label for="f-vt">Titre</label><input id="f-vt" data-f="v.titre" value="${esc(v.titre || "")}" maxlength="60"></div>
-      <div class="field"><label for="f-vd">Résultats visibles le</label><input id="f-vd" type="date" data-f="voteDate" value="${esc(ed.voteDate)}"></div>
-      <div class="field"><label for="f-vh">à</label><input id="f-vh" type="time" data-f="voteHeure" value="${esc(ed.voteHeure)}"><p class="help">Les organisateurs connectés voient les résultats à tout moment.</p></div>
+      <div class="field"><label for="f-vd">Date des résultats</label><input id="f-vd" type="date" data-f="voteDate" value="${esc(ed.voteDate)}"></div>
+      <div class="field"><label for="f-vh">Heure des résultats</label><input id="f-vh" type="time" data-f="voteHeure" value="${esc(ed.voteHeure)}"><p class="help">Les organisateurs connectés voient les résultats à tout moment.</p></div>
     </div>` : ""}
     </section>
     ${v.actif ? `<section class="card"><div class="row between"><h2>Catégories (${v.categories.length})</h2>
